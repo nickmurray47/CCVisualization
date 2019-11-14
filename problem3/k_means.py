@@ -5,7 +5,7 @@ from . import util
 
 def main():
     # check to make sure command line arguments are passed properly
-    if sys.argv != 3:
+    if sys.argv != 5:
         print('Usage: k_means.py <k> <distance_measure> <input> <output>',
               file=sys.stderr)
         exit(-1)
