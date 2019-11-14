@@ -3,7 +3,7 @@ from pyspark import SparkContext
 
 def main():
     # setup spark context
-    sc = SparkContext()
+    sc = SparkContext(appName='Data Scrubber')
 
     # read in data
     data = sc.textFile(
@@ -23,7 +23,7 @@ def main():
         lambda fields: fields[0] != '0' or fields[1] != '0')
 
     # format the data into csv format then save it out
-    csv_format = relevant_fields.map(lambda fields: ",".join(fields))
+    csv_format = relevant_fields.map(lambda fields: " ".join(fields))
     csv_format.coalesce(1, shuffle=True).saveAsTextFile(
         '/loudacre/devicestatus_etl')
 
