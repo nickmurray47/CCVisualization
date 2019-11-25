@@ -7,13 +7,23 @@ r = 6371
 
 # given point and a list of centers, outputs the index of the center
 # closest to the point using the given distance measure
-def closest_point(point, centers, get_distance):
+def closest_point(point, centers, distance_measure):
+    get_distance = euclidean_distance if distance_measure == 'euclidean' \
+        else great_circle_distance
     distances = [get_distance(point, center) for center in centers]
     return min(enumerate(distances), key=lambda distance: distance[1])[0]
 
 
-def add_points(point1, point2):
-    return tuple([point1[i] + point2[i] for i in range(len(point1))])
+# takes in a list of points
+# outputs the average point
+def average_points(points):
+    avg_point = [0 for _ in range(len(points[0]))]
+    for point in points:
+        for i, attr in enumerate(point):
+            avg_point[i] += attr
+
+    avg_point = [attr / len(points) for attr in avg_point]
+    return tuple(avg_point)
 
 
 # takes lat/lon point and outputs a x, y, z cartesian representation
@@ -25,12 +35,13 @@ def geo_to_cartesian(point):
     y = r * cos(lat) * sin(lon)
     z = r * sin(lat)
 
-    return x, y, z
+    return (x, y, z)
 
 
 # takes in cartesian coordinates and outputs lat/lon point
 # https://stackoverflow.com/questions/1185408/converting-from-longitude-latitude-to-cartesian-coordinates
-def cartesian_to_geo(x, y, z):
+def cartesian_to_geo(point):
+    x, y, z = point
     lat = asin(z / r)
     lon = atan2(y, x)
 
@@ -56,3 +67,10 @@ def great_circle_distance(point1, point2):
     c = 2 * asin(sqrt(a))
     km = r * c
     return km
+
+
+# takes in 2 arrays
+# outputs average element-wise differences between the 2 arrays
+def average_differences(arr1, arr2):
+    diffs = [abs(elem1 - arr2[i]) for i, elem1 in enumerate(arr1)]
+    return sum(diffs) / len(diffs)
