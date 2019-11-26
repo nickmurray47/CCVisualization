@@ -138,8 +138,10 @@ def main():
         means = new_means
 
     # format the output and output it
-    output_rdd = sc.parallelize(enumerate(means)).union(assignments).map(
-        lambda line: '%d %f %f' % (line[0], line[1][0], line[1][1]))
+    output_rdd = sc.parallelize(enumerate(means))\
+        .map(lambda line: 'c %d %f %f' % (line[0], line[1][0], line[1][1]))\
+        .union(assignments.map(
+            lambda line: 'p %d %f %f' % (line[0], line[1][0], line[1][1])))
     output_rdd.coalesce(1, shuffle=True).saveAsTextFile(output_path)
 
     sc.stop()
