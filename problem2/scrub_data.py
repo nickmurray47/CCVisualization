@@ -27,6 +27,8 @@ def main():
     csv_format.coalesce(1, shuffle=True).saveAsTextFile(
         '/loudacre/devicestatus_etl')
 
+    sc.stop()
+
 
 if __name__ == '__main__':
     main()

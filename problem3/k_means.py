@@ -101,8 +101,9 @@ def main():
     # read in the data from the text file
     # get just the lat and lon data
     data = sc.textFile(input_path)
-    lat_lon = data.map(lambda line: line.split()).map(
-        lambda fields: (float(fields[0]), float(fields[1]))).persist()
+    lat_lon = data.map(lambda line: line.split())\
+        .filter(lambda fields: fields)\
+        .map(lambda fields: (float(fields[0]), float(fields[1]))).persist()
 
     # initialize the means to distinct data points
     means = lat_lon.takeSample(False, k)
@@ -131,13 +132,17 @@ def main():
         for line in new_means_rdd.collect():
             new_means[line[0]] = line[1]
 
+        # check for convergence
         converged = average_differences(
             means, new_means, distance_measure) < converge_dist
         means = new_means
 
+    # format the output and output it
     output_rdd = sc.parallelize(enumerate(means)).union(assignments).map(
         lambda line: '%d %f %f' % (line[0], line[1][0], line[1][1]))
     output_rdd.coalesce(1, shuffle=True).saveAsTextFile(output_path)
+
+    sc.stop()
 
 
 if __name__ == '__main__':
