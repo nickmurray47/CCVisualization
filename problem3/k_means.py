@@ -102,11 +102,11 @@ def main():
     # get just the lat and lon data
     data = sc.textFile(input_path)
     lat_lon = data.map(lambda line: line.split())\
-        .filter(lambda fields: fields)\
+        .filter(lambda fields: fields)\ #this gets rid of all values that have null values? 
         .map(lambda fields: (float(fields[0]), float(fields[1]))).persist()
 
     # initialize the means to distinct data points
-    means = lat_lon.takeSample(False, k)
+    means = lat_lon.takeSample(False, k) #how we randomly select the means 
 
     # start the big loop that ends when we reach convergence
     converged = False
