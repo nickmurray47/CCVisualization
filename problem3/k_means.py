@@ -1,6 +1,7 @@
 import sys
 from pyspark import SparkContext
 from math import radians, degrees, sin, cos, asin, sqrt, atan2
+import re
 
 
 r = 6371
@@ -101,15 +102,12 @@ def main():
     # read in the data from the text file
     # get just the lat and lon data
     data = sc.textFile(input_path)
-    # lat_lon = data.map(lambda line: line.split())\
-    #     .filter(lambda fields: fields)\
-    #     .map(lambda fields: (float(fields[0]), float(fields[1]))).persist()
-    lat_lon = data.map(lambda line: line.split(','))\
+    lat_lon = data.map(lambda line: re.split('\s+|,', line))\
         .filter(lambda fields: fields)\
         .map(lambda fields: (float(fields[0]), float(fields[1]))).persist()
 
     # initialize the means to distinct data points
-    means = lat_lon.takeSample(False, k) #how we randomly select the means
+    means = lat_lon.takeSample(False, k)  # how we randomly select the means
 
     # start the big loop that ends when we reach convergence
     converged = False
